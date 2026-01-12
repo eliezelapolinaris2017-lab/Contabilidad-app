@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Oasis Contabilidad</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brandLogo">OA</div>
+      <div class="brandText">
+        <div class="brandTitle">Oasis Contabilidad</div>
+        <div class="brandSub">Doble partida · Asientos · Reportes · 2026</div>
+      </div>
+    </div>
+
+    <nav class="tabs" id="tabs">
+      <button class="tab is-active" data-view="dash" type="button">Dashboard</button>
+      <button class="tab" data-view="coa" type="button">Cuentas</button>
+      <button class="tab" data-view="journal" type="button">Asientos</button>
+      <button class="tab" data-view="reports" type="button">Reportes</button>
+      <button class="tab" data-view="data" type="button">Datos</button>
+    </nav>
+
+    <div class="topActions">
+      <button class="btn ghost" id="btnNewEntry" type="button">Nuevo</button>
+      <button class="btn" id="btnPostEntry" type="button">Registrar</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- KPI -->
+    <section class="kpiGrid">
+      <article class="kpiCard kpi-a">
+        <div class="kpiLabel">Asientos</div>
+        <div class="kpiValue" id="kpiEntries">0</div>
+        <div class="kpiHint">Registrados</div>
+      </article>
+      <article class="kpiCard kpi-b">
+        <div class="kpiLabel">Ingresos</div>
+        <div class="kpiValue" id="kpiIncome">$0.00</div>
+        <div class="kpiHint">Periodo</div>
+      </article>
+      <article class="kpiCard kpi-c">
+        <div class="kpiLabel">Gastos</div>
+        <div class="kpiValue" id="kpiExpense">$0.00</div>
+        <div class="kpiHint">Periodo</div>
+      </article>
+    </section>
+
+    <!-- VIEW: DASH -->
+    <section class="view is-active" id="view-dash">
+      <section class="card section">
+        <div class="sectionHead">
+          <div>
+            <div class="h1">Dashboard</div>
+            <div class="muted">Control contable sin drama: lo que entra, lo que sale y lo que queda.</div>
+          </div>
+          <div class="pill" id="dashStatus">Listo</div>
+        </div>
+
+        <div class="grid2">
+          <div class="field">
+            <label>Periodo (desde)</label>
+            <input class="input" id="pFrom" type="date" />
+          </div>
+          <div class="field">
+            <label>Periodo (hasta)</label>
+            <input class="input" id="pTo" type="date" />
+          </div>
+        </div>
+
+        <div class="dashGrid" id="dashCards"></div>
+        <div class="hint">Tip: usa “Asientos” para registrar ingresos/gastos con doble partida. Aquí se refleja automático.</div>
+      </section>
+    </section>
+
+    <!-- VIEW: COA -->
+    <section class="view" id="view-coa">
+      <section class="card section">
+        <div class="sectionHead">
+          <div>
+            <div class="h1">Plan de Cuentas</div>
+            <div class="muted">Base profesional: Activo, Pasivo, Patrimonio, Ingresos, Gastos.</div>
+          </div>
+          <div class="rowBtns">
+            <button class="btn ghost" id="btnSeed" type="button">Cargar plantilla</button>
+            <button class="btn danger" id="btnClearCOA" type="button">Vaciar</button>
+          </div>
+        </div>
+
+        <div class="grid3">
+          <div class="field">
+            <label>Código</label>
+            <input class="input" id="aCode" placeholder="Ej: 1100" />
+          </div>
+          <div class="field">
+            <label>Nombre</label>
+            <input class="input" id="aName" placeholder="Ej: Caja / Banco" />
+          </div>
+          <div class="field">
+            <label>Tipo</label>
+            <select class="input" id="aType">
+              <option value="ASSET">Activo</option>
+              <option value="LIABILITY">Pasivo</option>
+              <option value="EQUITY">Patrimonio</option>
+              <option value="INCOME">Ingresos</option>
+              <option value="EXPENSE">Gastos</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="rowBtns" style="margin-top:12px">
+          <button class="btn" id="btnAddAccount" type="button">Guardar cuenta</button>
+        </div>
+
+        <div class="sectionHead" style="margin-top:14px">
+          <div class="sectionTitle">Lista</div>
+          <input class="input small" id="coaSearch" placeholder="Buscar por código o nombre..." />
+        </div>
+
+        <div class="tableWrap">
+          <table class="histTable">
+            <thead>
+              <tr>
+                <th>Código</th><th>Cuenta</th><th>Tipo</th><th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="coaBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <!-- VIEW: JOURNAL -->
+    <section class="view" id="view-journal">
+      <section class="card section">
+        <div class="sectionHead">
+          <div>
+            <div class="h1">Asiento contable</div>
+            <div class="muted">Doble partida real: Debe = Haber, o no pasa.</div>
+          </div>
+          <div class="pill" id="entryMode">Nuevo</div>
+        </div>
+
+        <div class="grid3">
+          <div class="field">
+            <label>Fecha</label>
+            <input class="input" id="eDate" type="date" />
+          </div>
+          <div class="field">
+            <label>Referencia</label>
+            <input class="input" id="eRef" placeholder="Ej: Factura # / Compra # / Cliente" />
+          </div>
+          <div class="field">
+            <label>Descripción</label>
+            <input class="input" id="eMemo" placeholder="Ej: Servicio mini split / Compra materiales" />
+          </div>
+        </div>
+
+        <div class="sectionHead" style="margin-top:14px">
+          <div class="sectionTitle">Líneas del asiento</div>
+          <div class="rowBtns">
+            <button class="btn ghost" id="btnAddLine" type="button">+ Línea</button>
+            <button class="btn danger" id="btnDeleteEntry" type="button">Borrar</button>
+          </div>
+        </div>
+
+        <div class="table" style="margin-top:8px">
+          <div class="tHead">
+            <div>Cuenta</div>
+            <div>Debe</div>
+            <div>Haber</div>
+            <div></div>
+          </div>
+          <div id="lines"></div>
+        </div>
+
+        <div class="totals">
+          <div class="totRow"><span>Debe</span><strong id="tDebit">$0.00</strong></div>
+          <div class="totRow"><span>Haber</span><strong id="tCredit">$0.00</strong></div>
+          <div class="totRow grand"><span>Diferencia</span><strong id="tDiff">$0.00</strong></div>
+        </div>
+
+        <div class="hint">Si la diferencia no es $0.00, el botón “Registrar” no va a dejar. Así se trabaja serio.</div>
+      </section>
+
+      <section class="card section">
+        <div class="sectionHead">
+          <div>
+            <div class="h1">Libro diario</div>
+            <div class="muted">Historial de asientos. Abre, edita, audita.</div>
+          </div>
+          <input class="input small" id="jSearch" placeholder="Buscar por ref o memo..." />
+        </div>
+
+        <div class="tableWrap">
+          <table class="histTable">
+            <thead>
+              <tr>
+                <th>Fecha</th><th>Ref</th><th>Descripción</th><th>Líneas</th><th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="jBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <!-- VIEW: REPORTS -->
+    <section class="view" id="view-reports">
+      <section class="card section">
+        <div class="sectionHead">
+          <div>
+            <div class="h1">Reportes</div>
+            <div class="muted">Balance de Comprobación, P&G y Balance General por periodo.</div>
+          </div>
+          <div class="rowBtns">
+            <button class="btn ghost" id="btnRunReports" type="button">Actualizar</button>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="field">
+            <label>Periodo (desde)</label>
+            <input class="input" id="rFrom" type="date" />
+          </div>
+          <div class="field">
+            <label>Periodo (hasta)</label>
+            <input class="input" id="rTo" type="date" />
+          </div>
+        </div>
+
+        <div class="reportGrid">
+          <div class="reportCard rep-a">
+            <div class="repTitle">Balance de Comprobación</div>
+            <div class="repMeta">Sumatoria Debe/Haber por cuenta</div>
+            <div class="tableWrap" style="margin-top:10px">
+              <table class="histTable">
+                <thead><tr><th>Código</th><th>Cuenta</th><th>Debe</th><th>Haber</th><th>Saldo</th></tr></thead>
+                <tbody id="trialBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="reportCard rep-b">
+            <div class="repTitle">Pérdidas y Ganancias</div>
+            <div class="repMeta">Ingresos - Gastos</div>
+            <div class="repBig" id="plNet">$0.00</div>
+            <div class="repSplit">
+              <div><span>Ingresos</span><strong id="plIncome">$0.00</strong></div>
+              <div><span>Gastos</span><strong id="plExpense">$0.00</strong></div>
+            </div>
+            <div class="hint" id="plHint"></div>
+          </div>
+
+          <div class="reportCard rep-c">
+            <div class="repTitle">Balance General</div>
+            <div class="repMeta">Activo = Pasivo + Patrimonio</div>
+            <div class="repSplit">
+              <div><span>Activo</span><strong id="bsAssets">$0.00</strong></div>
+              <div><span>Pasivo</span><strong id="bsLiab">$0.00</strong></div>
+              <div><span>Patrimonio</span><strong id="bsEquity">$0.00</strong></div>
+            </div>
+            <div class="hint" id="bsHint"></div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- VIEW: DATA -->
+    <section class="view" id="view-data">
+      <section class="card section">
+        <div class="sectionHead">
+          <div>
+            <div class="h1">Datos</div>
+            <div class="muted">Export/Import para backup. Esto es tu “control de riesgo”.</div>
+          </div>
+          <div class="rowBtns">
+            <button class="btn ghost" id="btnExport" type="button">Export</button>
+            <button class="btn ghost" id="btnImport" type="button">Import</button>
+            <input id="importFile" type="file" accept="application/json" hidden />
+            <button class="btn danger" id="btnReset" type="button">Reset</button>
+          </div>
+        </div>
+
+        <div class="hint">Export guarda plan de cuentas + asientos. Import reemplaza la data actual.</div>
+      </section>
+    </section>
+
+  </main>
+
+  <!-- HUB -->
+  <a class="hubFab" id="hubBtn" href="#" title="Volver a Oasis Hub" aria-label="Volver a Oasis Hub">⟵ Hub</a>
+
+  <script src="app.js"></script>
+</body>
+</html>
